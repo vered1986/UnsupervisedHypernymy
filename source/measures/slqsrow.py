@@ -1,30 +1,27 @@
-import sys
-sys.path.append('../')
+import os
 
-from slqs import *
-from dsm_creation.common import *
+from docopt import docopt
+from os.path import basename
+from slqs_module import *
   
             
 def main():
     """
-    Modification of SLQS - as described in:
-    Santus, Enrico; Lu, Qin; Lenci, Alessandro; Schulte im Walde, Sabine. 2014. Chasing Hypernyms in Vector Spaces with Entropy. 
-       Proceedings of the 14th Conference of the European Chapter of the Association of Computational Linguistics. 38-42.
+    SLQS Row - as described in:
+    Vered Shwartz, Enrico Santus, Dominik Schlechtweg. 2017. Hypernyms under Siege: Linguistically-motivated Artillery for Hypernymy Detection.
+        Proceedings of the 15th Conference of the European Chapter of the Association of Computational Linguistics.
     """
 
-    # Get the arguments
-    args = docopt("""Compute first order entropies for a list of (x, y) pairs and save their scores. Each word's entropy
-                        corresponds to the entropy of its row (instead of the median of the entropies of its most
-                        associated columns as in the paper mentioned above).
+    args = docopt("""Compute SLQS Row for a list of (x, y) pairs and save their scores.
 
     Usage:
         slqsrow.py (-f | -p | -l) <testset_file> <model> <output_file>
         
     Arguments:
-        <testset_file> = a file containing term-pairs and labels, each line in the form of x\ty\tlabel
+        <testset_file> = a file containing term-pairs, labels and relations, each line in the form of x\ty\tlabel\trelation
         <model> = the pkl file for the vector space
-        <output_file> = where to save the results: a tab separated file with x\ty\tscore, where the
-                        score is SLQSrow (for y as the hypernym of x).
+        <output_file> = where to save the results: a tab separated file with x\ty\tlabel\trelation\tscore, where the
+                        score is SLQS Row (for y as the hypernym of x).
         
     Options:
         -f, --freq  calculate row entropies from frequency matrice
@@ -33,6 +30,7 @@ def main():
         
     """)
     
+    # Get the arguments
     matrice_pkl = args['<model>']
     testset_file = args['<testset_file>']
     output_file = args['<output_file>']
@@ -42,38 +40,25 @@ def main():
     is_save_weighted = False
     
     matrice_name = os.path.splitext(basename(matrice_pkl))[0]
-    matrice_prefix = matrice_name.split("_")[0]
-    args['matrice_prefix'] = matrice_prefix
     matrice_folder = os.path.dirname(matrice_pkl) + "/"
-    args['matrice_folder'] = matrice_folder
-    output_file_prefix = os.path.splitext(basename(output_file))[0]
-    args['output_file_prefix'] = output_file_prefix
-    testset_file_prefix = os.path.splitext(basename(testset_file))[0].split("_")[0]
-    args['testset_file_prefix'] = testset_file_prefix
-    testset_file_postfix = testset_file.split(".")[1]
-    args['testset_file_postfix'] = testset_file_postfix
-    target_output = "measures/entropies/target_entropies/" + output_file_prefix + "_" + testset_file_prefix + "_" + \
-                    testset_file_postfix + "_absolute_target_entropies" + ".txt"
-    args['target_output'] = target_output
     
 
     # Load the term-pairs
     targets, test_set = load_test_pairs(testset_file)
 
     # Receive a .pkl file
-    cooc_space, mi_space, vocab_map, vocab_size, column_map, id2column_map = \
-        get_space(matrice_folder, matrice_name, matrice_prefix, is_pmi, is_lmi, is_save_weighted)
+    cooc_space, mi_space, vocab_map, vocab_size, column_map, id2column_map = get_space(matrice_folder, matrice_name, is_pmi, is_lmi, is_save_weighted)
 
     # Get row entropies    
-    r_entropies_dict, r_entr_ranked = get_r_entropies(targets, cooc_space, mi_space, target_output, is_freq)
+    r_entropies_dict, r_entr_ranked = get_r_entropies(targets, cooc_space, mi_space, is_freq)
 
-    # Normalize the context entropy values to a value between 0 and 1 
+    # Scale the context entropy values to a value between 0 and 1 
     r_entropies = Min_max_scaling().scale(r_entropies_dict)     
 
     # Make unscored output
     unscored_output = make_unscored_output(r_entropies, test_set, vocab_map)
     
-    # Compute target SLQS for test tuples
+    # Compute SLQS for test tuples
     scored_output = score_slqs(unscored_output)
 
     # Save results
