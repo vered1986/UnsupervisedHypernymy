@@ -23,10 +23,11 @@ def main():
         APSyn.py <testset_file> <N> <dsm_prefix> <output_file>
 
 	<N> = the number of relevant contexts to be considered
-	<testset_file> = a file containing term-pairs, labels and relations, each line in the form of x\ty\tlabel\trelation
+	<testset_file> = a file containing term-pairs, labels and relations, each line in the form 
+			 of x\ty\tlabel\trelation
  	<dsm_prefix> = the prefix for the pkl files for the vector space
-        <output_file> = where to save the results: a tab separated file with x\ty\tlabel\trelation\tscore, where the
-        score is APSyn.
+        <output_file> = where to save the results: a tab separated file with x\ty\tlabel\trelation\tscore,
+			where the score is APSyn.
     """)
 
     testset_file = args['<testset_file>']
