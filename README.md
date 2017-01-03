@@ -8,4 +8,4 @@ Vered Shwartz, Enrico Santus and Dominik Schlechtweg. EACL 2017. [link](https://
 
 Usage note:
 
-The scripts in source/measures/ should be run directly in their folder. If you wish to do otherwise, you may have to change the path you add to the path attribute in sys.path.append('../') in the respective measure script.
+The scripts in source/measures/ should be run directly from their directory. If you wish to do otherwise, you may have to change the path you add to the path attribute in sys.path.append('../') in the respective measure script.
