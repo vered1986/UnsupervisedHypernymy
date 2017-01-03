@@ -24,10 +24,11 @@ def main():
     Usage:
         invCL.py <testset_file> <dsm_prefix> <output_file>
 
-        <testset_file> = a file containing term-pairs and labels, each line in the form of x\ty\tlabel
+        <testset_file> = a file containing term-pairs, labels and relations, each line in the form 
+                         of x\ty\tlabel\trelation
         <dsm_prefix> = the prefix for the pkl files for the vector space
-        <output_file> = where to save the results: a tab separated file with x\ty\tscore, where the
-        score is invCL (for y as the hypernym of x).
+        <output_file> = where to save the results: a tab separated file with x\ty\tlabel\trelation\tscore,
+                        where the score is invCL (for y as the hypernym of x).
     """)
 
     testset_file = args['<testset_file>']
