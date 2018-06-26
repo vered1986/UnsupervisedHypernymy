@@ -73,7 +73,7 @@ def update_dep_based_cooc_matrix(cooc_mat, freq_words, sentence):
             # a frequent enough word
 
             # Can't take sentence[parent - 1] because some malformatted tokens might have been skipped!
-            parents = [token for token in sentence if token[-2] == parent]
+            parents = [token for token in sentence if token[-3] == parent]
 
             if len(parents) > 0:
                 _, c_lemma, c_pos, _, _, _ = parents[0]
